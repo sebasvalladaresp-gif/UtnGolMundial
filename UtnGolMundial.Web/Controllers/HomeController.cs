@@ -21,7 +21,6 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // RF20: intenta acreditar el bono diario si el saldo esta en cero
         _billeteraService.ReclamarBonoDiarioSiAplica(User.UsuarioId());
 
         ViewBag.Partidos = _partidoService.Listar();
@@ -46,5 +45,6 @@ public class HomeController : Controller
         return RedirectToAction("Index");
     }
 
+    [AllowAnonymous]
     public IActionResult Error() => View();
 }

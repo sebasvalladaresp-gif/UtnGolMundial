@@ -9,5 +9,5 @@ public class Transaccion
     public TipoTransaccion Tipo { get; set; }
     public decimal Monto { get; set; }
     public string Detalle { get; set; } = "";
-    public DateTime Fecha { get; set; } = DateTime.Now;
+    public DateTime Fecha { get; set; } = DateTime.UtcNow;
 }

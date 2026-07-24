@@ -11,5 +11,5 @@ public class Prediccion
     public decimal Monto { get; set; }
     public decimal Cuota { get; set; } = 2.00m;
     public EstadoPrediccion Estado { get; set; } = EstadoPrediccion.Pendiente;
-    public DateTime FechaCreacion { get; set; } = DateTime.Now;
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 }

@@ -9,5 +9,5 @@ public class Usuario
     public string PasswordHash { get; set; } = "";
     public string Nombre { get; set; } = "";
     public Rol Rol { get; set; } = Rol.Usuario;
-    public DateTime FechaRegistro { get; set; } = DateTime.Now;
+    public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
 }

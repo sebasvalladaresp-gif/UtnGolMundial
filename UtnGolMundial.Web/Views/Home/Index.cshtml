@@ -1,0 +1,85 @@
+@{
+    ViewData["Title"] = "Calendario";
+    var partidos = (List<UtnGolMundial.Web.Models.Partido>)ViewBag.Partidos;
+    var misPredicciones = (List<UtnGolMundial.Web.Models.Prediccion>)ViewBag.MisPredicciones;
+    decimal saldo = ViewBag.Saldo;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Calendario de partidos</h3>
+    <span class="badge bg-warning text-dark fs-6">💰 Saldo: @saldo.ToString("0.00") UTNGolCoin</span>
+</div>
+
+<div class="row">
+    @foreach (var p in partidos)
+    {
+        var yaPredije = misPredicciones.FirstOrDefault(x => x.PartidoId == p.Id);
+        <div class="col-md-6 mb-3">
+            <div class="card p-3">
+                <div class="d-flex justify-content-between">
+                    <span class="badge bg-secondary">@p.Grupo</span>
+                    <span class="badge @(p.Estado == UtnGolMundial.Web.Models.EstadoPartido.Finalizado ? "bg-success" : "bg-primary")">
+                        @p.Estado
+                    </span>
+                </div>
+                <h5 class="mt-2">@p.EquipoLocal vs @p.EquipoVisitante</h5>
+                <p class="text-muted mb-2">🕒 @p.FechaHora.ToString("dddd d MMM, HH:mm")</p>
+
+                @if (p.Estado == UtnGolMundial.Web.Models.EstadoPartido.Finalizado)
+                {
+                    <p class="fw-bold">Resultado: @p.GolesLocal - @p.GolesVisitante (@p.ResultadoOficial)</p>
+                }
+
+                @if (yaPredije != null)
+                {
+                    var claseEstado = yaPredije.Estado == UtnGolMundial.Web.Models.EstadoPrediccion.Ganada ? "alert-success"
+                        : yaPredije.Estado == UtnGolMundial.Web.Models.EstadoPrediccion.Perdida ? "alert-danger"
+                        : "alert-info";
+                    <div class="alert @claseEstado py-2 mb-0">
+                        Predijiste: <strong>@yaPredije.ResultadoPredicho</strong> por @yaPredije.Monto UTNGolCoin
+                        — Estado: <strong>@yaPredije.Estado</strong>
+                        @if (yaPredije.Estado == UtnGolMundial.Web.Models.EstadoPrediccion.Ganada)
+                        {
+                            <text> 🎉</text>
+                        }
+                    </div>
+                }
+                else if (p.Estado != UtnGolMundial.Web.Models.EstadoPartido.Finalizado && DateTime.Now < p.FechaHora)
+                {
+                    <form asp-action="Predecir" method="post" class="row g-2 mt-1" onsubmit="return confirmarPrediccion(this)">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="PartidoId" value="@p.Id" />
+                        <div class="col-5">
+                            <select name="ResultadoPredicho" class="form-select form-select-sm">
+                                <option value="Local">Gana @p.EquipoLocal</option>
+                                <option value="Empate">Empate</option>
+                                <option value="Visitante">Gana @p.EquipoVisitante</option>
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <input type="number" name="Monto" class="form-control form-control-sm" placeholder="Monto" min="0.5" step="0.5" required />
+                        </div>
+                        <div class="col-3">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Predecir</button>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <p class="text-muted small mb-0">Ya no se puede predecir este partido.</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function confirmarPrediccion(form) {
+            const resultado = form.querySelector('select[name="ResultadoPredicho"]');
+            const monto = form.querySelector('input[name="Monto"]');
+            const textoResultado = resultado.options[resultado.selectedIndex].text;
+            return confirm(`¿Confirmas tu predicción: "${textoResultado}" apostando ${monto.value} UTNGolCoin?`);
+        }
+    </script>
+}

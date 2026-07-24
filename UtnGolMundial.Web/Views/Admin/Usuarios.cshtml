@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Admin: Usuarios";
+}
+<h3>👥 Gestión de usuarios</h3>
+
+<table class="table table-striped bg-white mt-3">
+    <thead>
+        <tr><th>Nombre</th><th>Correo</th><th>Saldo</th><th>Rol actual</th><th>Cambiar rol</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var u in ViewBag.Usuarios)
+        {
+            <tr>
+                <td>@u.Nombre</td>
+                <td>@u.Correo</td>
+                <td>@(((decimal)u.Saldo).ToString("0.00"))</td>
+                <td>
+                    <span class="badge @(u.Rol == UtnGolMundial.Web.Models.Rol.Administrador ? "bg-danger" : "bg-secondary")">
+                        @u.Rol
+                    </span>
+                </td>
+                <td>
+                    <form asp-action="CambiarRol" method="post" class="d-flex gap-1">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="usuarioId" value="@u.Id" />
+                        <select name="nuevoRol" class="form-select form-select-sm" style="width:auto">
+                            <option value="Usuario" selected="@(u.Rol == UtnGolMundial.Web.Models.Rol.Usuario)">Usuario</option>
+                            <option value="Administrador" selected="@(u.Rol == UtnGolMundial.Web.Models.Rol.Administrador)">Administrador</option>
+                            <option value="Invitado" selected="@(u.Rol == UtnGolMundial.Web.Models.Rol.Invitado)">Invitado</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Guardar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,74 @@
+@{
+    ViewData["Title"] = "Admin: Partidos";
+    var partidos = (List<UtnGolMundial.Web.Models.Partido>)ViewBag.Partidos;
+}
+
+<h3>⚙️ Administración de partidos</h3>
+
+<div class="card p-3 mb-4">
+    <h5>Crear nuevo partido</h5>
+    <form asp-action="CrearPartido" method="post" class="row g-2">
+        @Html.AntiForgeryToken()
+        <div class="col-md-2">
+            <input name="Grupo" class="form-control" placeholder="Grupo (ej. Grupo A)" required />
+        </div>
+        <div class="col-md-3">
+            <input name="EquipoLocal" class="form-control" placeholder="Equipo local" required />
+        </div>
+        <div class="col-md-3">
+            <input name="EquipoVisitante" class="form-control" placeholder="Equipo visitante" required />
+        </div>
+        <div class="col-md-3">
+            <input type="datetime-local" name="FechaHora" class="form-control" required />
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-success w-100">Crear</button>
+        </div>
+    </form>
+</div>
+
+<h5>Partidos</h5>
+<table class="table table-striped bg-white">
+    <thead>
+        <tr>
+            <th>Grupo</th><th>Partido</th><th>Fecha</th><th>Estado</th><th>Resultado</th><th>Registrar resultado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in partidos)
+        {
+            <tr>
+                <td>@p.Grupo</td>
+                <td>@p.EquipoLocal vs @p.EquipoVisitante</td>
+                <td>@p.FechaHora.ToString("dd/MM HH:mm")</td>
+                <td>@p.Estado</td>
+                <td>
+                    @if (p.Estado == UtnGolMundial.Web.Models.EstadoPartido.Finalizado)
+                    {
+                        @($"{p.GolesLocal} - {p.GolesVisitante} ({p.ResultadoOficial})")
+                    }
+                    else
+                    {
+                        <span class="text-muted">—</span>
+                    }
+                </td>
+                <td>
+                    @if (p.Estado != UtnGolMundial.Web.Models.EstadoPartido.Finalizado)
+                    {
+                        <form asp-action="RegistrarResultado" method="post" class="d-flex gap-1">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="PartidoId" value="@p.Id" />
+                            <input type="number" name="GolesLocal" class="form-control form-control-sm" style="width:60px" min="0" required />
+                            <input type="number" name="GolesVisitante" class="form-control form-control-sm" style="width:60px" min="0" required />
+                            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-success">✔ Liquidado</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

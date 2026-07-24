@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Mi Billetera";
+    var historial = (List<UtnGolMundial.Web.Models.Transaccion>)ViewBag.Historial;
+    decimal saldo = ViewBag.Saldo;
+}
+
+<h3>Mi Billetera</h3>
+<div class="card p-4 mb-4 text-center bg-warning bg-opacity-25">
+    <h1 class="display-5 mb-0">💰 @saldo.ToString("0.00")</h1>
+    <span class="text-muted">UTNGolCoin</span>
+</div>
+
+<h5>Historial de transacciones</h5>
+<table class="table table-striped bg-white">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Detalle</th>
+            <th class="text-end">Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in historial)
+        {
+            <tr class="@(t.Tipo == UtnGolMundial.Web.Models.TipoTransaccion.Premio ? "table-success" : "")">
+                <td>@t.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    @t.Tipo
+                    @if (t.Tipo == UtnGolMundial.Web.Models.TipoTransaccion.Premio)
+                    {
+                        <text> 🏆</text>
+                    }
+                </td>
+                <td>@t.Detalle</td>
+                <td class="text-end @(t.Monto < 0 ? "text-danger" : "text-success")">
+                    @(t.Monto >= 0 ? "+" : "")@t.Monto.ToString("0.00")
+                </td>
+            </tr>
+        }
+        @if (!historial.Any())
+        {
+            <tr><td colspan="4" class="text-center text-muted">Aún no tienes transacciones.</td></tr>
+        }
+    </tbody>
+</table>

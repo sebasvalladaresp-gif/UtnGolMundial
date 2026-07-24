@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Ranking";
+}
+<h3>🏅 Ranking de predictores</h3>
+<table class="table table-striped bg-white mt-3">
+    <thead>
+        <tr><th>#</th><th>Usuario</th><th class="text-end">Saldo</th></tr>
+    </thead>
+    <tbody>
+        @{ int puesto = 1; }
+        @foreach (var fila in ViewBag.Ranking)
+        {
+            <tr>
+                <td>@puesto</td>
+                <td>@fila.Nombre</td>
+                <td class="text-end">@(((decimal)fila.Saldo).ToString("0.00"))</td>
+            </tr>
+            puesto++;
+        }
+    </tbody>
+</table>
